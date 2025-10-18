@@ -1,49 +1,45 @@
 # FastAPI Clean Deps
 
+Clean Architecture with FastAPI - layers API → Service → Repository, dependency injection via Depends, and isolated tests using dependency_overrides.
 
-Clean Architecture with **FastAPI Dependencies** — layers **API → Service → Repository**, dependency injection via `Depends`, and **isolated tests** using `dependency_overrides`.
-
-
-## ⚡ Developer Experience (DX)
-
+## Developer Experience
 
 ```bash
-make setup # install dependencies via uv
-make run # run the app in dev mode
-make test # run the test suite
+make setup       # install dependencies via uv
+make run         # run the app in dev mode
+make test        # run the test suite
+make lint        # check code style with ruff
+make format      # format code automatically
+make typecheck   # static type checking with mypy
 ```
 
-
-Open: http://127.0.0.1:8000/
+Application: http://127.0.0.1:8000/
 Docs: http://127.0.0.1:8000/docs
 
+## Project Structure
 
-> If you don't use `uv`, export a `requirements.txt` with `make export-reqs` and then `pip install -r requirements.txt`.
-
-
-## Structure
 ```
 app/
-api/ # routers and API dependencies
-services/ # business/application layer
-repositories/ # contracts and data access implementations
-schemas/ # Pydantic contracts (input/output)
-core/ # container (dependency wiring)
-main.py # FastAPI application
+  api/             # routers and API dependencies
+  services/        # business and validation logic
+  repositories/    # contracts and data access implementations
+  schemas/         # Pydantic DTOs (input/output)
+  core/            # container and dependency wiring
+  main.py          # FastAPI application entry point
+tests/
+  test_*.py        # isolated API and service tests
 ```
 
+## Design Principles
 
-## Core idea
-- The API injects **Services** via `Depends` (DIP in practice).
-- Services talk to **Repositories** through a **Protocol** (abstraction), not a concrete impl.
-- In tests, swap providers with `app.dependency_overrides`.
-
-
----
-
+- API injects Services via Depends (Dependency Inversion Principle in practice)
+- Services depend on Repository Protocols, not concrete implementations
+- Repositories encapsulate infrastructure (in-memory for now, database later)
+- Tests override dependencies using app.dependency_overrides for full isolation
 
 ## Roadmap
-- `feature/sqlalchemy-adapter` (DB-backed repository)
-- `feature/async` (async-first layer)
-- `feature/redis-cache` (cross-cutting cache)
-- `feature/ci` (pipelines: lint + typecheck + test)
+
+- feature/sqlalchemy-adapter: database-backed repository
+- feature/async: async-first layers
+- feature/redis-cache: optional caching layer
+- feature/ci: lint, typecheck, and test pipelines
