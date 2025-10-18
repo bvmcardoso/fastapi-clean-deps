@@ -5,12 +5,15 @@ Clean Architecture with FastAPI - layers API → Service → Repository, depende
 ## Developer Experience
 
 ```bash
-make setup       # install dependencies via uv
-make run         # run the app in dev mode
-make test        # run the test suite
-make lint        # check code style with ruff
-make format      # format code automatically
-make typecheck   # static type checking with mypy
+make setup-local        # install all dependencies (including dev tools)
+make setup-prod         # install only production dependencies
+make run                # run the FastAPI app with auto-reload
+make test               # execute the test suite
+make lint               # check code style with ruff
+make format-and-fix     # format code and fix lint issues
+make typecheck          # static type checking with mypy
+make check              # full quality gate (format, lint, typecheck, test)
+make help               # list available commands
 ```
 
 Application: http://127.0.0.1:8000/
@@ -20,14 +23,31 @@ Docs: http://127.0.0.1:8000/docs
 
 ```
 app/
-  api/             # routers and API dependencies
-  services/        # business and validation logic
-  repositories/    # contracts and data access implementations
-  schemas/         # Pydantic DTOs (input/output)
-  core/            # container and dependency wiring
-  main.py          # FastAPI application entry point
+  api/
+    deps.py             # dependency providers for routes
+    v1/
+      items/
+        router.py       # CRUD endpoints for items
+  core/
+    container.py        # dependency injection wiring
+  repositories/
+    protocol.py         # abstract repository contract (Protocol)
+    in_memory.py        # in-memory implementation for testing
+  schemas/
+    items.py            # Pydantic DTOs (ItemCreate, ItemRead, ItemUpdate)
+  services/
+    items.py            # business rules and validations
+  main.py               # FastAPI app entry point
 tests/
-  test_*.py        # isolated API and service tests
+  conftest.py           # shared test configuration
+  test_healthcheck.py   # root endpoint sanity test
+  test_items_api.py     # full CRUD flow tests for items
+Makefile                # developer tasks (uv + ruff + mypy + pytest)
+pyproject.toml          # project and tool configuration
+pytest.ini              # pytest overrides
+uv.lock                 # uv dependency lockfile
+LICENSE                 # license
+README.md               # documentation
 ```
 
 ## Design Principles
